@@ -37,6 +37,10 @@ def main(page: ft.Page):
 
     # Tutti i TextField per le info necessarie per aggiungere un nuovo strumento (tipo, marca, anno, contatore posti)
     # TODO
+    input_tipo = ft.TextField(label="Tipo")
+    input_marca = ft.TextField(label="Marca")
+    input_anno = ft.TextField(label="Anno acquisto")
+
 
     # --- FUNZIONI APP ---
     def aggiorna_lista_strumenti():
@@ -54,8 +58,32 @@ def main(page: ft.Page):
         deposito.set_responsabile(input_responsabile.value)
         txt_responsabile.value = f"Responsabile: {deposito.get_responsabile()}"
 
+    def aggiungi_strumento(e):
+        if int(input_anno.value) > 0 and int(input_prezzo.value) > 0:
+            deposito.aggiungi_strumento(input_tipo.value, input_marca.value, input_anno.value, input_prezzo.value)
+
+        input_tipo.value = ""
+        input_marca.value = ""
+        input_anno.value = ""
+        input_prezzo.value = 0
+
+        aggiorna_lista_strumenti()
+
     # Handlers per la gestione dei pulsanti utili all'inserimento di un nuovo strumento
     # TODO
+
+    def handle_add(e):
+        current_val = input_prezzo.value
+
+        input_prezzo.value = current_val + 1
+        input_prezzo.update()
+
+    def handle_remove(e):
+        current_val = input_prezzo.value
+
+        input_prezzo.value = current_val - 1
+        input_prezzo.update()
+
 
     # --- EVENTI ---
     toggle_cambia_tema = ft.Switch(label="Tema scuro", value=True, on_change=cambia_tema)
@@ -63,10 +91,25 @@ def main(page: ft.Page):
 
     # Pulsanti per la gestione dell'inserimento di un nuovo strumento
     # TODO
+    pulsante_aggiungi_strumento = ft.Button("Aggiungi strumento", on_click=aggiungi_strumento)
+
+    # Contatore
+    pulsante_meno = ft.IconButton(icon=ft.Icons.REMOVE,
+                             icon_color="red",
+                             icon_size=24, on_click=handle_remove)
+    pulsante_piu = ft.IconButton(icon=ft.Icons.ADD,
+                           icon_color="green",
+                           icon_size=24, on_click=handle_add)
+    input_prezzo = ft.TextField(width=100, disabled=True,
+                          value=0,
+                          text_align=ft.TextAlign.CENTER)
 
     # --- LAYOUT ---
     page.add(
-        toggle_cambia_tema,
+        ft.Row(
+            controls=[toggle_cambia_tema],
+            alignment=ft.MainAxisAlignment.START,
+        ),
 
         # Sezione 1
         txt_titolo,
@@ -81,6 +124,12 @@ def main(page: ft.Page):
 
         # Sezione 3
         # TODO
+        ft.Text("Aggiungi nuovo strumento", size=20),
+        ft.Row(spacing=25,
+               controls=[input_tipo, input_marca, input_anno, pulsante_meno, input_prezzo, pulsante_piu],
+               alignment=ft.MainAxisAlignment.CENTER),
+        pulsante_aggiungi_strumento,
+
 
         # Sezione 4
         ft.Divider(),
