@@ -2,6 +2,8 @@ import flet as ft
 from alert import AlertManager
 from deposito_strumenti import DepositoStrumenti
 
+from datetime import date
+
 FILE_STRUMENTI = "strumenti.csv"
 
 def main(page: ft.Page):
@@ -36,7 +38,6 @@ def main(page: ft.Page):
     lista_strumenti = ft.ListView(expand=True, spacing=5, padding=10, auto_scroll=True)
 
     # Tutti i TextField per le info necessarie per aggiungere un nuovo strumento (tipo, marca, anno, contatore posti)
-    # TODO
     input_tipo = ft.TextField(label="Tipo")
     input_marca = ft.TextField(label="Marca")
     input_anno = ft.TextField(label="Anno acquisto")
@@ -59,19 +60,20 @@ def main(page: ft.Page):
         txt_responsabile.value = f"Responsabile: {deposito.get_responsabile()}"
 
     def aggiungi_strumento(e):
-        if int(input_anno.value) > 0 and int(input_prezzo.value) > 0:
-            deposito.aggiungi_strumento(input_tipo.value, input_marca.value, input_anno.value, input_prezzo.value)
+        try:
+            if 0 < int(input_anno.value) <= date.today().year and int(input_prezzo.value) > 0:
+                deposito.aggiungi_strumento(input_tipo.value, input_marca.value, input_anno.value, input_prezzo.value)
 
-        input_tipo.value = ""
-        input_marca.value = ""
-        input_anno.value = ""
-        input_prezzo.value = 0
+            input_tipo.value = ""
+            input_marca.value = ""
+            input_anno.value = ""
+            input_prezzo.value = 0
 
-        aggiorna_lista_strumenti()
+            aggiorna_lista_strumenti()
+        except ValueError:
+            alert.show_alert("❌ Errore: inserisci un valore numerico per l'anno")
 
     # Handlers per la gestione dei pulsanti utili all'inserimento di un nuovo strumento
-    # TODO
-
     def handle_add(e):
         current_val = input_prezzo.value
 
@@ -90,7 +92,6 @@ def main(page: ft.Page):
     pulsante_conferma_responsabile = ft.Button("Conferma", on_click=conferma_responsabile)
 
     # Pulsanti per la gestione dell'inserimento di un nuovo strumento
-    # TODO
     pulsante_aggiungi_strumento = ft.Button("Aggiungi strumento", on_click=aggiungi_strumento)
 
     # Contatore
@@ -123,7 +124,6 @@ def main(page: ft.Page):
                alignment=ft.MainAxisAlignment.CENTER),
 
         # Sezione 3
-        # TODO
         ft.Text("Aggiungi nuovo strumento", size=20),
         ft.Row(spacing=25,
                controls=[input_tipo, input_marca, input_anno, pulsante_meno, input_prezzo, pulsante_piu],
